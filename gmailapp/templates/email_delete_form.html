@@ -1,162 +1,381 @@
-
-
+<!DOCTYPE html>
+<html lang="en">
 {% load static %}
-
-<!-- Navbar -->
-<div class="navbar" style="background-color: white; color: white; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center;">
-    <!-- Logo (Top Left) -->
-    <div class="logo">
-        <h4><a class="nav-link active" href="/" style="color: black; font-family: 'Trebuchet MS', sans-serif; font-weight: bold; font-size:26;">CODEMOS</a></h4>
-    </div>
-
-    <!-- Sign In/Sign Out Logic (Top Right) -->
-    <div class="logout-link" id="logoutnow">
-        <div class="navbar-nav ms-auto" style="display: flex; justify-content: flex-end;">
-            {% if user.is_authenticated %}
-                <!-- If User is Authenticated (Sign-out Section) -->
-                <div class="nav-link-active">
-                    <p style="margin-left:0px; display: flex; justify-content: center; color: black ; font-size: 20px; font-weight: bold;">
-                        <span class="material-symbols--person" style="margin-right: 5px;"></span>{{ user.username | title }}
-                    </p>
-                </div>
-                <a class="nav-link active" href="{% url 'logout_url' %}" style="color: white; font-weight: bold;">
-                    Signout
-                </a>
-            {% else %}
-                <!-- If User is NOT Authenticated (Sign-in Section) -->
-                <a class="nav-link active" href="https://del.codemos.in/accounts/google/login/?process=login" style="color: white;">
-                    Signin
-                </a>
-            {% endif %}
-        </div>
-    </div>
-</div>
-
-<!-- Main Container with Custom CSS -->
-<div class="container">
-    {% if messages %}
-        <ul class="messages" style="color: blue; list-style-type: none; padding: 0;">
-            {% for message in messages %}
-                <li{% if message.tags %} class="{{ message.tags }}"{% endif %} style="font-size: 14px; margin-bottom: 10px; padding: 10px; background-color: #ffe5e5; border-radius: 5px;">
-                    {{ message }}
-                </li>
-            {% endfor %}
-        </ul>
-    {% endif %}
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Delete Emails – PhotoPurge</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #6c63ff;
+      --secondary: #56cfe1;
+      --background: #f9faff;
+      --text: #222;
+      --soft-gray: #eaeaea;
+      --light-red: #ffe5e5;
+      --dark-primary: #5d56d9;
+    }
     
-    <h1 style="text-align: center; color:black; font-size: 28px; margin-top: 40px;">Delete Your Emails</h1>
-
-    <a href="{% url 'recover_emails' %}" class="btn btn-primary" style="display: block; width: 250px; margin: 20px auto; background-color: rgb(3, 40, 80); color: white; padding: 10px 20px; text-align: center; text-decoration: none; border-radius: 5px; font-size: 16px; transition: background-color 0.3s;">
-        Recover Deleted Emails
-    </a>
-
-    {% if polling %}
-        <div style="text-align: center; margin-top: 20px; font-size: 16px;">
-            {% if task_status == "IN_PROGRESS" %}
-                <p style="color: #FF9800;">Your task is still in progress. Please wait...</p>
-                <meta http-equiv="refresh" content="25;url='{% url 'polling_view' task_id=task_id %}'">
-            {% elif task_status == "SUCCESS" %}
-                <p style="color: #4CAF50;">Your task was completed successfully!</p>
-            {% elif task_status == "FAILURE" %}
-                <p style="color: #f44336;">Your task failed. Please try again.</p>
-            {% endif %}
-        </div>
-    {% else %}
-        <form method="POST" action="{% url 'delete_emails' %}" style="margin-top: 40px;">
-    {% csrf_token %}
-    <h5 style="text-align:center; font-size: 20px; color: #333;">Choose Category</h5>
-    
-    <select name="category" style="width: 60%; padding: 10px; margin: 20px auto; border: 1px solid #ccc; border-radius: 5px; font-size: 16px; display: block;">
-        <option value="CATEGORY_PROMOTIONS">Promotions</option>
-        <option value="CATEGORY_SOCIAL">Social</option>
-        <option value="CATEGORY_UPDATES">Updates</option>
-        <option value="CATEGORY_FORUMS">Forums</option>
-    </select>
-    
-    <br>
-    <button style="display: block; width: 60%; margin: 20px auto; background-color: rgb(3, 40, 80); color: white; padding: 10px 20px; border-radius: 5px; font-size: 16px; border: none; cursor: pointer; transition: background-color 0.3s;">
-        Delete Emails
-    </button>
-</form>
-
-    {% endif %}
-</div>
-
-<!-- Custom CSS for the container -->
-<style>
-    .container {
-        font-family: 'Arial', sans-serif;
-        max-width: 800px;
-        margin: 20px auto;
-        padding: 20px;
-        background-color: #f9f9f9;
-        border-radius: 8px;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    .dark-mode {
+      --primary: #8d87ff;
+      --secondary: #60e2f5;
+      --background: #121212;
+      --text: #ffffff;
+      --soft-gray: #2d2d2d;
+      --light-red: #4d0b0b;
+      --dark-primary: #a39cfd;
     }
 
-    .container h1 {
-        font-size: 28px;
-        color: #4CAF50;
-        text-align: center;
-        margin-top: 40px;
+    * {
+      box-sizing: border-box;
+      scroll-behavior: smooth;
     }
 
-    .btn-primary {
-        display: block;
-        width: 250px;
-        margin: 20px auto;
-        background-color: #007BFF;
+    body {
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      background-color: var(--background);
+      color: var(--text);
+      line-height: 1.6;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    
+    .top-header {
+      background: var(--primary);
+      padding: 1.5rem 2rem;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+    }
+    
+    .header-left {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem; /* Space between logo and toggle */
+    }
+    
+    .header-right {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+    }
+
+    .theme-toggle {
+        background: none;
+        border: none;
         color: white;
-        padding: 10px 20px;
-        text-align: center;
-        text-decoration: none;
-        border-radius: 5px;
-        font-size: 16px;
-        transition: background-color 0.3s;
+        cursor: pointer;
+        font-size: 1.5rem;
+        transition: transform 0.2s;
+    }
+
+    .theme-toggle:hover {
+        transform: scale(1.1);
+    }
+    
+    .dark-mode .theme-toggle {
+        color: var(--text);
+    }
+
+    .top-header .logo h4 {
+      margin: 0;
+    }
+
+    .top-header .logo a {
+      color: white;
+      font-family: 'Trebuchet MS', sans-serif;
+      text-decoration: none;
+      /* Enhanced logo styling */
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+      transition: text-shadow 0.3s;
+    }
+    
+    .top-header .logo a:hover {
+      text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+    }
+    
+    .dark-mode .top-header .logo a {
+        color: var(--text);
+    }
+    
+    .auth-links {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .auth-links div {
+      white-space: nowrap;
+      font-weight: bold;
+    }
+
+    .auth-links a {
+      color: white;
+      font-weight: bold;
+      text-decoration: none;
+    }
+    
+    .dark-mode .auth-links a {
+      color: var(--text);
+    }
+    
+    .dark-mode .auth-links div {
+        color: var(--text) !important;
+    }
+
+
+    main {
+      padding: 2rem 1rem;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    .card {
+      background-color: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      padding: 2rem;
+      margin-top: 2rem;
+      text-align: center;
+    }
+    
+    .dark-mode .card {
+        background-color: #1a1a1a;
+        box-shadow: 0 4px 12px rgba(255, 255, 255, 0.05);
+    }
+
+
+    .card h1 {
+      font-size: 2rem;
+      color: var(--primary);
+      margin-bottom: 1rem;
+    }
+    
+    .dark-mode .card h1 {
+        color: var(--primary);
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 0.75rem 1.5rem;
+      border-radius: 30px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: transform 0.2s, background 0.3s;
+      border: none;
+      cursor: pointer;
+    }
+    
+    .btn-primary {
+      background-color: var(--primary);
+      color: white;
     }
 
     .btn-primary:hover {
-        background-color: #0056b3;
+      transform: translateY(-3px);
+      background-color: var(--dark-primary);
+    }
+    
+    .form-group {
+      margin-bottom: 1.5rem;
     }
 
-    form {
-        margin-top: 40px;
+    .form-group select {
+      width: 100%;
+      max-width: 400px;
+      padding: 0.75rem;
+      border: 1px solid var(--soft-gray);
+      border-radius: 8px;
+      font-size: 1rem;
+      display: block;
+      margin: 0.5rem auto 0;
+      background-color: white;
+      color: var(--text);
     }
-
-    form h5 {
-        text-align: center;
-        font-size: 20px;
-        color: #333;
-    }
-
-    select {
-        width: 60%;
-        padding: 10px;
-        margin: 20px auto;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        font-size: 16px;
-        display: block;
-    }
-
-    button {
-        display: block;
-        width: 60%;
-        margin: 20px auto;
-        background-color: #4CAF50;
+    
+    .dark-mode .form-group select {
+        background-color: #333;
         color: white;
-        padding: 10px 20px;
-        border-radius: 5px;
-        font-size: 16px;
-        border: none;
-        cursor: pointer;
-        transition: background-color 0.3s;
+        border-color: #555;
+    }
+    
+    .messages {
+      list-style-type: none;
+      padding: 0;
+      margin-bottom: 1.5rem;
     }
 
-    button:hover {
-        background-color: #45a049;
+    .messages li {
+      font-size: 0.9rem;
+      padding: 1rem;
+      border-radius: 8px;
+      background-color: var(--light-red);
+      color: var(--text);
+      text-align: center;
     }
-</style>
+    
+    .dark-mode .messages li {
+        background-color: var(--light-red);
+        color: white;
+    }
+
+    .status-message {
+      margin-top: 1.5rem;
+      border-radius: 8px;
+    }
+
+    .status-message p {
+      font-weight: bold;
+      padding: 1rem;
+      border-radius: 8px;
+    }
+    
+    .status-message.in-progress { background-color: #fff9e6; color: #b38b00; }
+    .status-message.success { background-color: #e6f9e6; color: #2e7d32; }
+    .status-message.failure { background-color: #ffe5e5; color: #c62828; }
+    
+    .dark-mode .status-message.in-progress { background-color: #332b00; color: #ffeb3b; }
+    .dark-mode .status-message.success { background-color: #0d330d; color: #8bc34a; }
+    .dark-mode .status-message.failure { background-color: #4d0b0b; color: #ef5350; }
 
 
+    footer {
+      text-align: center;
+      padding: 2rem 1rem;
+      background-color: var(--soft-gray);
+      font-size: 0.9rem;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    
+    .dark-mode footer {
+        background-color: #1a1a1a;
+        color: #ddd;
+    }
 
+    footer a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+    
+    .dark-mode footer a {
+        color: var(--secondary);
+    }
+    
+  </style>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+</head>
+<body>
+  
+  <header class="top-header">
+    <div class="header-left">
+      <div class="logo">
+        <h4>
+          <a class="nav-link active" href="/" style="color: white; font-family: 'Trebuchet MS', sans-serif; text-decoration: none;">
+            CODEMOS
+          </a>
+        </h4>
+      </div>
+      <button id="theme-toggle" class="theme-toggle">
+        <span class="material-symbols-outlined">
+            dark_mode
+        </span>
+      </button>
+    </div>
+
+    <div class="header-right">
+        <div class="auth-links">
+          {% if user.is_authenticated %}
+            <div style="color: white; font-weight: bold;">👤 {{ user.username|title }}</div>
+            <a href="{% url 'logout_url' %}" style="color: white; font-weight: bold;">Signout</a>
+          {% else %}
+            <a href="http://127.0.0.1:8000/accounts/google/login/callback/" style="color: white; font-weight: bold;">
+              Signin
+            </a>
+          {% endif %}
+        </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="card">
+      <h1 class="card-title">Delete Your Emails</h1>
+
+      {% if messages %}
+        <ul class="messages">
+          {% for message in messages %}
+            <li class="{{ message.tags }}">{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+      
+      <a href="{% url 'recover_emails' %}" class="btn btn-primary" style="margin-top: 1.5rem;">
+        Recover Deleted Emails
+      </a>
+
+      {% if polling %}
+        <div class="status-message {% if task_status == 'IN_PROGRESS' %}in-progress{% elif task_status == 'SUCCESS' %}success{% elif task_status == 'FAILURE' %}failure{% endif %}">
+          {% if task_status == "IN_PROGRESS" %}
+            <p>Your task is still in progress. Please wait...</p>
+            <meta http-equiv="refresh" content="25;url='{% url 'polling_view' task_id=task_id %}'">
+          {% elif task_status == "SUCCESS" %}
+            <p>Your task was completed successfully!</p>
+          {% elif task_status == "FAILURE" %}
+            <p>Your task failed. Please try again.</p>
+          {% endif %}
+        </div>
+      {% else %}
+        <form method="POST" action="{% url 'delete_emails' %}" style="margin-top: 2rem;">
+          {% csrf_token %}
+          <div class="form-group">
+            <h5 style="margin-bottom: 1rem;">Choose Category</h5>
+            <select name="category">
+              <option value="CATEGORY_PROMOTIONS">Promotions</option>
+              <option value="CATEGORY_SOCIAL">Social</option>
+              <option value="CATEGORY_UPDATES">Updates</option>
+              <option value="CATEGORY_FORUMS">Forums</option>
+            </select>
+          </div>
+          
+          <button type="submit" class="btn btn-primary" style="margin-top: 1.5rem;">
+            Delete Emails
+          </button>
+        </form>
+      {% endif %}
+    </div>
+  </main>
+  
+  <footer>
+    <p>
+      <a href="https://github.com/ajaymalviy/photopurge" target="_blank">GitHub</a> |
+      <a href="#">Privacy</a> | Created by <strong>Ajay & Yash</strong> with Django, Celery & Google APIs
+    </p>
+  </footer>
+  
+  <script>
+    const themeToggleBtn = document.getElementById('theme-toggle');
+    const body = document.body;
+    
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+      body.classList.add('dark-mode');
+    }
+    
+    themeToggleBtn.addEventListener('click', () => {
+      body.classList.toggle('dark-mode');
+      
+      if (body.classList.contains('dark-mode')) {
+        localStorage.setItem('theme', 'dark');
+      } else {
+        localStorage.setItem('theme', 'light');
+      }
+    });
+  </script>
+</body>
+</html>

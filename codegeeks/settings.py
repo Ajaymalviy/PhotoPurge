@@ -16,13 +16,11 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
+# SECURITY WARNING: 
 SECRET_KEY = 'django-insecure--86oenvzrsktb1^m$w+f85we_z%#hc-kk9#-__h_)l0e&0h$q+'
 
-# SECURITY WARNING: don't run with debug turned on in production!
+# SECURITY WARNING: 
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
@@ -114,12 +112,6 @@ SOCIALACCOUNT_PROVIDERS = {
         },
         'OAUTH_PKCE_ENABLED': True,
         'APP': {
-        #       'client_id': '99034799467-hl9dbl4t4l64gftesd8bokb1no6kbgu3.apps.googleusercontent.com',
-        #       'secret': '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',
-        #     # for local development
-            # 'client_id': '99034799467-6l1lm0l6b80h2bcmon2i8st2odg778nj.apps.googleusercontent.com',
-            # 'secret': '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',
-
             #for ajay local dev
             'client_id': '1013600742983-121f7j0ul1ehn8alrd52a3s1fl3ebocv.apps.googleusercontent.com',
             'secret':'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',
@@ -130,8 +122,8 @@ SOCIALACCOUNT_PROVIDERS = {
 }
 
 
-LOGIN_REDIRECT_URL = '/'
-# LOGIN_REDIRECT_URL = '/'  # Redirect after successful login
+
+LOGIN_REDIRECT_URL = '/'  # Redirect after successful login
 LOGOUT_REDIRECT_URL = '/' 
 
 

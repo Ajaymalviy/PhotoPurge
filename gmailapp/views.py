@@ -5,9 +5,7 @@ from google.oauth2.credentials import Credentials
 from .utils import retrieve_credentials_for_user
 from django.contrib import messages
 from .models import TaskStatus, RecoverStatus
-import json
 from allauth.socialaccount.models import SocialAccount, SocialToken
-
 from .tasks import delete_emails_task, recover_emails_task
 from django.shortcuts import get_object_or_404
 from django.core.mail import EmailMessage

@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser, baseAstractUser
+from django.contrib.auth.models import AbstractUser
 from django.utils.timezone import now, localtime
 from django.contrib.auth.models import User
 

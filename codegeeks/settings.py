@@ -96,8 +96,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'gmail',
-        'USER': 'ajay',
-        'PASSWORD': 'Root@123',
+        'USER': 'root',
+        'PASSWORD': 'root@123',
         'HOST': 'localhost',
         'PORT': 3306,
     }
@@ -114,12 +114,16 @@ SOCIALACCOUNT_PROVIDERS = {
         },
         'OAUTH_PKCE_ENABLED': True,
         'APP': {
-              'client_id': '99034799467-hl9dbl4t4l64gftesd8bokb1no6kbgu3.apps.googleusercontent.com',
-              'secret': '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',
-            # for local development
-            #'client_id': '99034799467-6l1lm0l6b80h2bcmon2i8st2odg778nj.apps.googleusercontent.com',
-            #'secret': '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',
-            'key': ''
+        #       'client_id': '99034799467-hl9dbl4t4l64gftesd8bokb1no6kbgu3.apps.googleusercontent.com',
+        #       'secret': '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',
+        #     # for local development
+            # 'client_id': '99034799467-6l1lm0l6b80h2bcmon2i8st2odg778nj.apps.googleusercontent.com',
+            # 'secret': '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',
+
+            #for ajay local dev
+            'client_id': '1013600742983-121f7j0ul1ehn8alrd52a3s1fl3ebocv.apps.googleusercontent.com',
+            'secret':'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',
+            'key':''
         }
     }   
     

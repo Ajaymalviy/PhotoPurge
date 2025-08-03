@@ -44,7 +44,7 @@ def retrieve_credentials_for_user(user):
 
 
         if creds.expired and creds.refresh_token:
-            creds.refresh(Request())
+            creds.refresh(requests.Request())
 
 
 
@@ -94,6 +94,7 @@ def migrate_photos(request):
                                         }
     
     page_token = request.GET.get('page_token')
+    print('page token is ', page_token)
     photos, next_page_token = get_photos(src_creds, page_token)
 
     destination_credentials = request.session.get('destination_credentials')
